@@ -1,6 +1,6 @@
-def main():
-    print("Hello from github-api!")
+import requests
+import json
 
 
-if __name__ == "__main__":
-    main()
+payload = {"key1": "value1", "key2": "value2"}
+print(json.dumps(payload))

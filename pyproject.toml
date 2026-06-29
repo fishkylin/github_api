@@ -3,5 +3,14 @@ name = "github-api"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.14"
-dependencies = []
+requires-python = ">=3.13"
+dependencies = [
+    "requests>=2.34.2",
+]
+
+
+[project.scripts]
+gitapi = "github_api.main:main"
+
+[tool.uv]
+package = true
