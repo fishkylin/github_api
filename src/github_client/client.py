@@ -3,7 +3,7 @@ import requests
 import os
 
 from requests import Response
-from .models import User
+from .models import User, Repo
 
 class GitHubClient:
     """GitHub REST API Client"""
@@ -34,9 +34,22 @@ class GitHubClient:
             headers["Authorization"] = f"Bearer {self.token}"
         return headers
 
-    def _request(self, method: str, path: str) -> Response:
+    def _request(
+            self,
+            method: str,
+            url: str,
+            params: dict | None = None,
+            json: dict | None = None,
+            data: dict | None = None,
+        ) -> Response:
         """鉴权 | 重试 | 错误处理"""
-        resp = self._session.request(method, path)
+        resp = self._session.request(
+            method,
+            url=url,
+            params=params,
+            json=json,
+            data=data,
+        )
         resp.raise_for_status()
         return resp
 
@@ -47,3 +60,14 @@ class GitHubClient:
     def get_authenticated_user(self) -> User:
         """根据 token 获取用户信息"""
         return User.from_dict(self._request("GET", f"{self.base_url}/user").json())
+
+    def list_repos(self, username: str | None = None) -> list[Repo]:
+        repo_list: list[Repo] = []
+        if username is None:
+            url = f"{self.base_url}/user/repos"
+        else:
+            url = f"{self.base_url}/users/{username}/repos"
+        resp = self._request("GET",url,params={"per_page": 3})
+        for item in resp.json():
+            repo_list.append(Repo.from_dict(item))
+        return repo_list
